@@ -55,5 +55,25 @@ stages:
             displayName: Publish
             artifact: Packed
 
+  - stage: Deploy
+    displayName: Deploy to Nuget
+
+    jobs:
+      
+      - job: Deploy
+        steps:
+
+          - download: current
+            artifact: Packed
+
+          - checkout: none
+
+          - task: NuGetCommand@2
+            displayName: Internal nuget upload
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Pipeline.Workspace)/Packed/nugets/*.nupkg'
+              nuGetFeedType: external
+              publishFeedCredentials: NuGet
 
 
