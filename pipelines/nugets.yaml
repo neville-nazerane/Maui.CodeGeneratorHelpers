@@ -32,7 +32,9 @@ stages:
 
           - task: DotNetCoreCLI@2
             inputs:
-              projects: $(projectNames)
+              projects: |
+                Maui.CodeGenerator.Core
+                Maui.CodeGeneratorHelpers
               command: pack
               versioningScheme: byBuildNumber
               modifyOutputPath: true
