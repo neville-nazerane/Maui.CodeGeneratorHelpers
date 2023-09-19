@@ -11,11 +11,16 @@ trigger:
 
 
 variables:
-  projectNames:
-    - Maui.CodeGenerator.Core
-    - Maui.CodeGeneratorHelpers
   minorVersion: 1
   majorVersion: 0
+
+parameters:
+  - name: projectNames
+    type: object
+    default:
+      - Maui.CodeGenerator.Core
+      - Maui.CodeGeneratorHelpers
+  
 
 name: $(majorVersion).$(minorVersion).$(Build.BuildId)
 
@@ -30,7 +35,7 @@ stages:
 
         steps:
           
-          - ${{ each project in variables.projectNames }}:
+          - ${{ each project in parameters.projectNames }}:
             - script: dotnet pack ${{ project }}
                       -o $(Build.ArtifactStagingDirectory)/packed
                       -c release
