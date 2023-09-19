@@ -36,6 +36,7 @@ stages:
                     -p:PackageVersion=$(Build.BuildNumber)
             displayName: Packing Maui.CodeGenerator.Core
             workingDirectory: src
+            
 
           # - task: DotNetCoreCLI@2
           #   inputs:
