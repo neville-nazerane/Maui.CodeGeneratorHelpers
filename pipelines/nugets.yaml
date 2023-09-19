@@ -30,7 +30,7 @@ stages:
 
         steps:
 
-          - script: dotnet pack -p Maui.CodeGenerator.Core 
+          - script: dotnet pack Maui.CodeGenerator.Core 
                     -o $(Build.ArtifactStagingDirectory)/packed
                     -c release
                     -p:PackageVersion=$(Build.BuildNumber)
