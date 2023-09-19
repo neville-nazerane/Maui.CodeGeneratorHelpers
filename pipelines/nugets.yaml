@@ -30,17 +30,24 @@ stages:
 
         steps:
 
-          - task: DotNetCoreCLI@2
-            inputs:
-              projects: |
-                Maui.CodeGenerator.Core
-                Maui.CodeGeneratorHelpers
-              command: pack
-              versioningScheme: byBuildNumber
-              modifyOutputPath: true
-              workingDirectory: src
-              configuration: release
-              arguments: -o $(Build.ArtifactStagingDirectory)/packed
+          - script: dotnet pack -p Maui.CodeGenerator.Core 
+                    -o $(Build.ArtifactStagingDirectory)/packed
+                    -c release
+                    -p:PackageVersion=$(Build.BuildName)
+            displayName: Packing Maui.CodeGenerator.Core
+            workingDirectory: src
+
+          # - task: DotNetCoreCLI@2
+          #   inputs:
+          #     projects: |
+          #       Maui.CodeGenerator.Core
+          #       Maui.CodeGeneratorHelpers
+          #     command: pack
+          #     versioningScheme: byBuildNumber
+          #     modifyOutputPath: true
+          #     workingDirectory: src
+          #     configuration: release
+          #     arguments: -o $(Build.ArtifactStagingDirectory)/packed
 
           - publish: $(Build.ArtifactStagingDirectory)/packed
             displayName: Publish
