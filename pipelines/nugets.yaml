@@ -17,7 +17,7 @@ variables:
   minorVersion: 1
   majorVersion: 0
 
-name: $(minorVersion).$(minorVersion).$(Build.BuildId)
+name: $(majorVersion).$(minorVersion).$(Build.BuildId)
 
 stages:
 
@@ -34,9 +34,10 @@ stages:
                     -o $(Build.ArtifactStagingDirectory)/packed
                     -c release
                     -p:PackageVersion=$(Build.BuildNumber)
+                    -v d
             displayName: Packing Maui.CodeGenerator.Core
             workingDirectory: src
-            
+
 
           # - task: DotNetCoreCLI@2
           #   inputs:
