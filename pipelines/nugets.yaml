@@ -11,9 +11,9 @@ trigger:
 
 
 variables:
-  projectNames: |
-    Maui.CodeGenerator.Core
-    Maui.CodeGeneratorHelpers
+  projectNames:
+    - Maui.CodeGenerator.Core
+    - Maui.CodeGeneratorHelpers
   minorVersion: 1
   majorVersion: 0
 
@@ -29,14 +29,14 @@ stages:
       - job: Build
 
         steps:
-
-          - script: dotnet pack Maui.CodeGenerator.Core 
-                    -o $(Build.ArtifactStagingDirectory)/packed
-                    -c release
-                    -p:PackageVersion=$(Build.BuildNumber)
-                    -v d
-            displayName: Packing Maui.CodeGenerator.Core
-            workingDirectory: src
+          
+          - ${{ each project in variables.projectNames }}:
+            - script: dotnet pack ${{ project }}
+                      -o $(Build.ArtifactStagingDirectory)/packed
+                      -c release
+                      -p:PackageVersion=$(Build.BuildNumber)
+              displayName: Packing ${{ project }}
+              workingDirectory: src
 
 
           # - task: DotNetCoreCLI@2
@@ -72,7 +72,7 @@ stages:
             displayName: Internal nuget upload
             inputs:
               command: 'push'
-              packagesToPush: '$(Pipeline.Workspace)/Packed/nugets/*.nupkg'
+              packagesToPush: '$(Pipeline.Workspace)/Packed/*.nupkg'
               nuGetFeedType: external
               publishFeedCredentials: NuGet
 
