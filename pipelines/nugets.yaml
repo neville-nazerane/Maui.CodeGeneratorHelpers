@@ -18,8 +18,8 @@ parameters:
   - name: projectNames
     type: object
     default:
-      - Maui.CodeGenerator.Core
-      - Maui.CodeGeneratorHelpers
+      - CodeGenerator.Maui.Core
+      - CodeGeneratorHelpers.Maui
   
 
 name: $(majorVersion).$(minorVersion).$(Build.BuildId)

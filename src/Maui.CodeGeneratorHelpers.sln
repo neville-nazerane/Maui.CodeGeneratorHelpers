@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maui.CodeGeneratorHelpers", "Maui.CodeGeneratorHelpers\Maui.CodeGeneratorHelpers.csproj", "{C8D81015-0EE6-4CB4-9597-94725EB4D39F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGeneratorHelpers.Maui", "Maui.CodeGeneratorHelpers\CodeGeneratorHelpers.Maui.csproj", "{C8D81015-0EE6-4CB4-9597-94725EB4D39F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget package", "Nuget package", "{4D1A246C-62A1-44E9-B967-0191F911880D}"
 EndProject
@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleGeneratorConsoleApp",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMauiApp", "SampleMauiApp\SampleMauiApp.csproj", "{4D9AC82B-D58B-445C-A0B8-0A61CDC25551}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maui.CodeGenerator.Core", "Maui.CodeGenerator.Core\Maui.CodeGenerator.Core.csproj", "{C9C987A5-3A9A-4B6A-9A35-EC84E0738D42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator.Maui.Core", "Maui.CodeGenerator.Core\CodeGenerator.Maui.Core.csproj", "{C9C987A5-3A9A-4B6A-9A35-EC84E0738D42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
