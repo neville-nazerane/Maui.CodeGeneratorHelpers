@@ -1,0 +1,37 @@
+
+
+
+variables:
+  projectNames: Maui.CodeGenerator.Core,Maui.CodeGeneratorHelpers
+  minorVersion: 1
+  majorVersion: 0
+
+name: $(minorVersion).$(minorVersion).$(Build.BuildId)
+
+stages:
+
+  - stage: Pack
+    displayName: Pack Nugets
+
+    jobs:
+
+      - job: Build
+
+        steps:
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              projects: $(projectNames)
+              command: pack
+              versioningScheme: byBuildNumber
+              modifyOutputPath: true
+              workingDirectory: src
+              configuration: release
+              arguments: -o $(Build.ArtifactStagingDirectory)/packed
+
+          - publish: $(Build.ArtifactStagingDirectory)/packed
+            displayName: Publish
+            artifact: Packed
+
+
+
