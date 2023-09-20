@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGeneratorHelpers.Maui", "Maui.CodeGeneratorHelpers\CodeGeneratorHelpers.Maui.csproj", "{C8D81015-0EE6-4CB4-9597-94725EB4D39F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget package", "Nuget package", "{4D1A246C-62A1-44E9-B967-0191F911880D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{BF31BEAE-FF9A-4711-B3DE-A2996F9615DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleGeneratorConsoleApp", "SampleGeneratorConsoleApp\SampleGeneratorConsoleApp.csproj", "{64813805-5934-4415-985A-EE55CD97E10F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleGeneratorConsoleApp", "SampleGeneratorConsoleApp\SampleGeneratorConsoleApp.csproj", "{64813805-5934-4415-985A-EE55CD97E10F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMauiApp", "SampleMauiApp\SampleMauiApp.csproj", "{4D9AC82B-D58B-445C-A0B8-0A61CDC25551}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleMauiApp", "SampleMauiApp\SampleMauiApp.csproj", "{4D9AC82B-D58B-445C-A0B8-0A61CDC25551}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator.Maui.Core", "Maui.CodeGenerator.Core\CodeGenerator.Maui.Core.csproj", "{C9C987A5-3A9A-4B6A-9A35-EC84E0738D42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGeneratorHelpers.Maui", "CodeGeneratorHelpers.Maui\CodeGeneratorHelpers.Maui.csproj", "{3FA43D87-502D-4F7D-AE6B-C4015415F8FC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator.Maui.Core", "CodeGenerator.Maui.Core\CodeGenerator.Maui.Core.csproj", "{44C92797-647D-4963-828E-C46114987E12}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nugets", "Nugets", "{4E0582C0-4B0E-4743-8693-69545159B09C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C8D81015-0EE6-4CB4-9597-94725EB4D39F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8D81015-0EE6-4CB4-9597-94725EB4D39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C8D81015-0EE6-4CB4-9597-94725EB4D39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C8D81015-0EE6-4CB4-9597-94725EB4D39F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{64813805-5934-4415-985A-EE55CD97E10F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{64813805-5934-4415-985A-EE55CD97E10F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64813805-5934-4415-985A-EE55CD97E10F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -35,19 +31,23 @@ Global
 		{4D9AC82B-D58B-445C-A0B8-0A61CDC25551}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D9AC82B-D58B-445C-A0B8-0A61CDC25551}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4D9AC82B-D58B-445C-A0B8-0A61CDC25551}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{C9C987A5-3A9A-4B6A-9A35-EC84E0738D42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9C987A5-3A9A-4B6A-9A35-EC84E0738D42}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9C987A5-3A9A-4B6A-9A35-EC84E0738D42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9C987A5-3A9A-4B6A-9A35-EC84E0738D42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FA43D87-502D-4F7D-AE6B-C4015415F8FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FA43D87-502D-4F7D-AE6B-C4015415F8FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FA43D87-502D-4F7D-AE6B-C4015415F8FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FA43D87-502D-4F7D-AE6B-C4015415F8FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44C92797-647D-4963-828E-C46114987E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44C92797-647D-4963-828E-C46114987E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44C92797-647D-4963-828E-C46114987E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44C92797-647D-4963-828E-C46114987E12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C8D81015-0EE6-4CB4-9597-94725EB4D39F} = {4D1A246C-62A1-44E9-B967-0191F911880D}
 		{64813805-5934-4415-985A-EE55CD97E10F} = {BF31BEAE-FF9A-4711-B3DE-A2996F9615DF}
 		{4D9AC82B-D58B-445C-A0B8-0A61CDC25551} = {BF31BEAE-FF9A-4711-B3DE-A2996F9615DF}
-		{C9C987A5-3A9A-4B6A-9A35-EC84E0738D42} = {4D1A246C-62A1-44E9-B967-0191F911880D}
+		{3FA43D87-502D-4F7D-AE6B-C4015415F8FC} = {4E0582C0-4B0E-4743-8693-69545159B09C}
+		{44C92797-647D-4963-828E-C46114987E12} = {4E0582C0-4B0E-4743-8693-69545159B09C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {111E1A74-ED9D-4C20-A93F-A20B42DD151E}

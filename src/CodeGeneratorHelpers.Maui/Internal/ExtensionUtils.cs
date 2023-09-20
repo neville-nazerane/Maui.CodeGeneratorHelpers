@@ -7,21 +7,16 @@ namespace Maui.CodeGeneratorHelpers.Internal
     internal static class ExtensionUtils
     {
 
-        //internal static string ToFullPath(this string folder, string[] possibleCurrentProjNames = null)
-        //{
-        //    var projName = typeof(Program).Assembly.GetName().Name;
-        //    var possibleCurrentFolders = new List<string> { projName };
-        //    if (possibleCurrentProjNames is not null)
-        //        possibleCurrentFolders.AddRange(possibleCurrentProjNames);
+        internal static string ToFullRootPath(this string folder, IEnumerable<string> possiblePaths)
+        {
+            var rootDir = Directory.GetCurrentDirectory()
+                         .Split(possiblePaths.ToArray(), StringSplitOptions.None)
+                         .First();
 
-        //    var rootDir = Directory.GetCurrentDirectory()
-        //                 .Split(possibleCurrentFolders.ToArray(), StringSplitOptions.None)
-        //                 .First();
+            return Path.Combine(rootDir, folder);
+        }
 
-        //    return Path.Combine(rootDir, folder);
-        //}
-
-        //internal static string Combine(this string path1, string path2) => Path.Combine(path1, path2);
+        internal static string Combine(this string path1, string path2) => Path.Combine(path1, path2);
 
         //internal static string StripFileName(this string fullName)
         //{
