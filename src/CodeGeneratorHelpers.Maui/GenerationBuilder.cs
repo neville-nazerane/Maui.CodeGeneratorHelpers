@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,8 +11,8 @@ namespace Maui.CodeGeneratorHelpers
     public class GenerationBuilder
     {
 
-        string viewModelPath = null;
-        string pagesPath = null;
+        string viewModelPath = "ViewModels";
+        string pagesPath = "Pages";
         string generatedFolderName = "Generated";
 
         string viewModelSuffix = "ViewModel";
@@ -22,6 +23,7 @@ namespace Maui.CodeGeneratorHelpers
 
         IEnumerable<string> executionLocations = Array.Empty<string>();
 
+        public static GenerationBuilder WithNewInstance() => new();
 
         /// <summary>
         /// Possible project paths generator could be executed from
@@ -85,14 +87,15 @@ namespace Maui.CodeGeneratorHelpers
                 throw new ArgumentNullException(nameof(mobileProjectName), "Specify mobile project using WithMobileProjectName()");
             var locations = new HashSet<string>(executionLocations)
             {
-                mobileAppLocation
+                mobileAppLocation,
+                Assembly.GetCallingAssembly().GetName().Name
             };
-            string rootPath = Directory.GetCurrentDirectory().ToFullRootPath(locations);
-            string fullMobilePath = rootPath.Combine(mobileAppLocation);
+
+            //string rootPath = Directory.GetCurrentDirectory().ToFullPath(locations);
+            string fullMobilePath = mobileAppLocation.ToFullPath(locations);
             string fullPagePath = fullMobilePath.Combine(pagesPath);
             string fullViewModelPath = fullMobilePath.Combine(viewModelPath);
             string generationPath = fullViewModelPath.Combine(generatedFolderName);
-
 
 
 

@@ -7,7 +7,7 @@ namespace Maui.CodeGeneratorHelpers.Internal
     internal static class ExtensionUtils
     {
 
-        internal static string ToFullRootPath(this string folder, IEnumerable<string> possiblePaths)
+        internal static string ToFullPath(this string folder, IEnumerable<string> possiblePaths)
         {
             var rootDir = Directory.GetCurrentDirectory()
                          .Split(possiblePaths.ToArray(), StringSplitOptions.None)
