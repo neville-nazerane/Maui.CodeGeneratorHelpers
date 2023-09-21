@@ -13,16 +13,23 @@ namespace Maui.CodeGeneratorHelpers.Internal
             => classNames.Select(c => $".AddTransient<{c}>()")
                          .ToArray();
 
+        public static string GenerateInjectionMethod(IEnumerable<string> injections)
+            => $@"
+    
+".Trim();
 
-        public string GenerateUtilClass(string @namespace,
-                                        string fileName, 
-                                        IEnumerable<string> methods)
+        public static string GenerateUtilClass(string @namespace,
+                                                IEnumerable<string> methods)
             => $@"
 
 
-public class {fileName}
+namespace {@namespace};
+
+public class GenerationUtils
 {{
     
+
+
 }}
 
 ".Trim();

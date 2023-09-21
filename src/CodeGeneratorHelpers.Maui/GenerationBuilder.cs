@@ -81,7 +81,7 @@ namespace Maui.CodeGeneratorHelpers
             return this;
         }
 
-        public Task GenerateAsync()
+        public async Task GenerateAsync()
         {
             if (mobileProjectName is null)
                 throw new ArgumentNullException(nameof(mobileProjectName), "Specify mobile project using WithMobileProjectName()");
@@ -103,9 +103,12 @@ namespace Maui.CodeGeneratorHelpers
 
             var injections = CodeUtils.GenerateTransientInjections(
                                                 pageNames.Union(viewModelNames));
-            
 
-            return Task.CompletedTask;
+
+            string utilCode = CodeUtils.GenerateUtilClass($"{mobileProjectName}.{generatedFolderName}", null);
+            string genFilePath = "GenerationUtil.g.cs".Combine(generationPath);
+            await File.WriteAllTextAsync(genFilePath, utilCode);
+
         }
 
     }
