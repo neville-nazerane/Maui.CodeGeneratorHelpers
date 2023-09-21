@@ -17,12 +17,24 @@ namespace Maui.CodeGeneratorHelpers.Internal
         }
 
         internal static string Combine(this string path1, string path2) => Path.Combine(path1, path2);
+        
+        internal static void RecreateFolder(this string folderFullPath)
+        {
+            if (Directory.Exists(folderFullPath)) 
+                Directory.Delete(folderFullPath, true);
+            Directory.CreateDirectory(folderFullPath);
+        }
 
-        //internal static string StripFileName(this string fullName)
-        //{
-        //    var info = new FileInfo(fullName);
-        //    return info.Name[..^info.Extension.Length];
-        //}
+        internal static IEnumerable<string> GetFileNamesAndTrimSuffix(this string folder, string suffix)
+            => Directory.GetFiles(folder, $"*{suffix}")
+                        .Select(f => f.StripOffExtension()[..^suffix.Length])
+                        .ToArray();
+
+        internal static string StripOffExtension(this string fullName)
+        {
+            var info = new FileInfo(fullName);
+            return info.Name[..^info.Extension.Length];
+        }
 
         //internal static string TrimPage(this string pageName)
         //{

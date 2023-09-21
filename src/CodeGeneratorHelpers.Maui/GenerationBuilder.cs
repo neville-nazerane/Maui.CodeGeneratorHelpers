@@ -96,8 +96,14 @@ namespace Maui.CodeGeneratorHelpers
             string fullPagePath = fullMobilePath.Combine(pagesPath);
             string fullViewModelPath = fullMobilePath.Combine(viewModelPath);
             string generationPath = fullViewModelPath.Combine(generatedFolderName);
+            generationPath.RecreateFolder();
 
+            var pageNames = fullPagePath.GetFileNamesAndTrimSuffix(pageSuffix);
+            var viewModelNames = fullViewModelPath.GetFileNamesAndTrimSuffix(viewModelSuffix);
 
+            var injections = CodeUtils.GenerateTransientInjections(
+                                                pageNames.Union(viewModelNames));
+            
 
             return Task.CompletedTask;
         }
