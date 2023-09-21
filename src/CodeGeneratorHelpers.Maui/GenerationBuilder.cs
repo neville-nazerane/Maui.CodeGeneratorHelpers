@@ -1,6 +1,7 @@
 ﻿using Maui.CodeGeneratorHelpers.Internal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -83,12 +84,12 @@ namespace Maui.CodeGeneratorHelpers
 
         public async Task GenerateAsync()
         {
+
             if (mobileProjectName is null)
                 throw new ArgumentNullException(nameof(mobileProjectName), "Specify mobile project using WithMobileProjectName()");
             var locations = new HashSet<string>(executionLocations)
             {
-                mobileAppLocation,
-                Assembly.GetCallingAssembly().GetName().Name
+                mobileAppLocation
             };
 
             //string rootPath = Directory.GetCurrentDirectory().ToFullPath(locations);
@@ -98,8 +99,8 @@ namespace Maui.CodeGeneratorHelpers
             string generationPath = fullViewModelPath.Combine(generatedFolderName);
             generationPath.RecreateFolder();
 
-            var pageNames = fullPagePath.GetFileNamesAndTrimSuffix(pageSuffix);
-            var viewModelNames = fullViewModelPath.GetFileNamesAndTrimSuffix(viewModelSuffix);
+            var pageNames = fullPagePath.GetNamesWithEnding(".xaml");
+            var viewModelNames = fullViewModelPath.GetNamesWithEnding(".cs");
 
             var injections = CodeUtils.GenerateTransientInjections(
                                                 pageNames.Union(viewModelNames));

@@ -25,9 +25,12 @@ namespace Maui.CodeGeneratorHelpers.Internal
             Directory.CreateDirectory(folderFullPath);
         }
 
-        internal static IEnumerable<string> GetFileNamesAndTrimSuffix(this string folder, string suffix)
+        internal static string AppendIfNotSuffix(this string str, string suffix)
+            => str.EndsWith(suffix) ? str : str + suffix;
+
+        internal static IEnumerable<string> GetNamesWithEnding(this string folder, string suffix)
             => Directory.GetFiles(folder, $"*{suffix}")
-                        .Select(f => f.StripOffExtension()[..^suffix.Length])
+                        .Select(f => new FileInfo(f).Name.StripOffExtension())
                         .ToArray();
 
         internal static string StripOffExtension(this string fullName)
