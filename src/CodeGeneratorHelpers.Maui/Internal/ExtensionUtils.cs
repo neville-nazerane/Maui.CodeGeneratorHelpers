@@ -22,7 +22,7 @@ namespace Maui.CodeGeneratorHelpers.Internal
         {
             if (Directory.Exists(folderFullPath)) 
                 Directory.Delete(folderFullPath, true);
-            Directory.CreateDirectory(folderFullPath);
+            var res = Directory.CreateDirectory(folderFullPath);
         }
 
         internal static string AppendIfNotSuffix(this string str, string suffix)

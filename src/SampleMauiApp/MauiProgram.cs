@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SampleMauiApp.Generated;
 
 namespace SampleMauiApp
 {
@@ -7,6 +8,7 @@ namespace SampleMauiApp
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+            builder.Services.AddGeneratedInjections();
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>

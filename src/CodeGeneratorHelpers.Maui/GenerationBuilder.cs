@@ -96,7 +96,7 @@ namespace Maui.CodeGeneratorHelpers
             string fullMobilePath = mobileAppLocation.ToFullPath(locations);
             string fullPagePath = fullMobilePath.Combine(pagesPath);
             string fullViewModelPath = fullMobilePath.Combine(viewModelPath);
-            string generationPath = fullViewModelPath.Combine(generatedFolderName);
+            string generationPath = fullMobilePath.Combine(generatedFolderName);
             generationPath.RecreateFolder();
 
             var pageNames = fullPagePath.GetNamesWithEnding(".xaml");
@@ -105,9 +105,19 @@ namespace Maui.CodeGeneratorHelpers
             var injections = CodeUtils.GenerateTransientInjections(
                                                 pageNames.Union(viewModelNames));
 
+            var methods = new List<string>();
+            methods.Add(CodeUtils.GenerateInjectionMethod(injections));
 
-            string utilCode = CodeUtils.GenerateUtilClass($"{mobileProjectName}.{generatedFolderName}", null);
-            string genFilePath = "GenerationUtil.g.cs".Combine(generationPath);
+            var usings = new[]
+            {
+                $"{mobileProjectName}.{pagesPath}",
+                $"{mobileProjectName}.{viewModelPath}",
+            };
+
+            string utilCode = CodeUtils.GenerateUtilClass($"{mobileProjectName}.{generatedFolderName}", 
+                                                          methods,
+                                                          usings);
+            string genFilePath = generationPath.Combine("GenerationUtils.g.cs");
             await File.WriteAllTextAsync(genFilePath, utilCode);
 
         }

@@ -15,20 +15,22 @@ namespace Maui.CodeGeneratorHelpers.Internal
 
         public static string GenerateInjectionMethod(IEnumerable<string> injections)
             => $@"
-    
+    public static IServiceCollection AddGeneratedInjections(this IServiceCollection services)
+        => services{string.Join("\n                   ", injections)};
 ".Trim();
 
         public static string GenerateUtilClass(string @namespace,
-                                                IEnumerable<string> methods)
+                                                IEnumerable<string> methods,
+                                                IEnumerable<string> usings)
             => $@"
-
+{string.Join('\n', usings.Select(u => $"using {u};").ToArray())}
 
 namespace {@namespace};
 
-public class GenerationUtils
+public static class GenerationUtils
 {{
     
-
+{string.Join('\n', methods.Select(u => $"   {u}").ToArray())}
 
 }}
 
