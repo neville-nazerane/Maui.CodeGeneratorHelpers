@@ -19,11 +19,50 @@ namespace Maui.CodeGeneratorHelpers.Internal
         => services{string.Join("\n                   ", injections)};
 ".Trim();
 
+        public static string GeneratePartialPage(string @namespace,
+                                                 IEnumerable<string> usings,
+                                                 string pageName,
+                                                 string viewModelName)
+            => @$"
+{PrintUsings(usings)}
+
+namespace {@namespace};
+
+public partial class {pageName} {{
+
+    private {viewModelName} viewModel = null;
+
+    public {viewModelName} ViewModel
+    {{
+        get
+        {{
+            if (viewModel is null)
+            {{
+                viewModel = Shell.Current.Handler.MauiContext.Services.GetService<{viewModelName}>();
+                BindingContext = viewModel;
+            }}
+            return viewModel;
+        }}
+    }}
+
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    {{
+        await ViewModel.OnNavigatedToAsync(args);
+        OnNavigatedToInternal(args);
+        base.OnNavigatedTo(args);
+    }}
+
+    protected virtual void OnNavigatedToInternal(NavigatedToEventArgs args) {{ }}
+
+}}
+    
+".Trim();
+
         public static string GenerateUtilClass(string @namespace,
                                                 IEnumerable<string> methods,
                                                 IEnumerable<string> usings)
             => $@"
-{string.Join('\n', usings.Select(u => $"using {u};").ToArray())}
+{PrintUsings(usings)}
 
 namespace {@namespace};
 
@@ -36,5 +75,9 @@ public static class GenerationUtils
 
 ".Trim();
 
+        private static string PrintUsings(IEnumerable<string> usings)
+        {
+            return string.Join('\n', usings.Select(u => $"using {u};").ToArray());
+        }
     }
 }

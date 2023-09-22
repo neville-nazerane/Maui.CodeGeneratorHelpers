@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -99,8 +100,8 @@ namespace Maui.CodeGeneratorHelpers
             string generationPath = fullMobilePath.Combine(generatedFolderName);
             generationPath.RecreateFolder();
 
-            var pageNames = fullPagePath.GetNamesWithEnding(".xaml");
-            var viewModelNames = fullViewModelPath.GetNamesWithEnding(".cs");
+            var pageNames = fullPagePath.GetNamesWithEnding($"{pageSuffix}.xaml");
+            var viewModelNames = fullViewModelPath.GetNamesWithEnding($"{viewModelSuffix}.cs");
 
             var injections = CodeUtils.GenerateTransientInjections(
                                                 pageNames.Union(viewModelNames));
@@ -118,6 +119,17 @@ namespace Maui.CodeGeneratorHelpers
                                                           methods,
                                                           usings);
             string genFilePath = generationPath.Combine("GenerationUtils.g.cs");
+
+            foreach (var pageName in pageNames)
+            {
+                var viewModelName = viewModelNames.SingleOrDefault(v => v == $"{pageName[..^pageSuffix.Length]}{viewModelSuffix}");
+                if (viewModelName is not null)
+                {
+                    var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}", usings, pageName, viewModelName);
+                    await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.cs"), pageCode);
+                }
+            }
+
             await File.WriteAllTextAsync(genFilePath, utilCode);
 
         }
