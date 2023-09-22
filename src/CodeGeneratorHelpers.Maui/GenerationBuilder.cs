@@ -126,7 +126,7 @@ namespace Maui.CodeGeneratorHelpers
                 if (viewModelName is not null)
                 {
                     var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}", usings, pageName, viewModelName);
-                    await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.cs"), pageCode);
+                    await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.g.cs"), pageCode);
                 }
             }
 
