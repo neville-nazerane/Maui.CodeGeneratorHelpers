@@ -18,7 +18,7 @@ parameters:
   - name: projectNames
     type: object
     default:
-      - CodeGenerator.Maui.Core
+      # - CodeGenerator.Maui.Core
       - CodeGeneratorHelpers.Maui
   
 
@@ -42,19 +42,6 @@ stages:
                       -p:PackageVersion=$(Build.BuildNumber)
               displayName: Packing ${{ project }}
               workingDirectory: src
-
-
-          # - task: DotNetCoreCLI@2
-          #   inputs:
-          #     projects: |
-          #       Maui.CodeGenerator.Core
-          #       Maui.CodeGeneratorHelpers
-          #     command: pack
-          #     versioningScheme: byBuildNumber
-          #     modifyOutputPath: true
-          #     workingDirectory: src
-          #     configuration: release
-          #     arguments: -o $(Build.ArtifactStagingDirectory)/packed
 
           - publish: $(Build.ArtifactStagingDirectory)/packed
             displayName: Publish

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SampleMauiApp.ViewModels
 {
-    internal class SecondViewModel
+    public class SecondViewModel : ViewModelBase
     {
     }
 }

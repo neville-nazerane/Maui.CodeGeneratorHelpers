@@ -1,3 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Maui.CodeGeneratorHelpers;
 
+
+
+
+
+await GenerationBuilder.WithNewInstance()
+                       .WithMobileProjectName("SampleMauiApp")
+                       .WithExecutionLocations("SampleGeneratorConsoleApp")
+                       .GenerateAsync();

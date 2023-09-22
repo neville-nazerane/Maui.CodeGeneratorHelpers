@@ -1,7 +1,10 @@
 ﻿using Maui.CodeGeneratorHelpers.Internal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,8 +13,8 @@ namespace Maui.CodeGeneratorHelpers
     public class GenerationBuilder
     {
 
-        string viewModelPath = null;
-        string pagesPath = null;
+        string viewModelPath = "ViewModels";
+        string pagesPath = "Pages";
         string generatedFolderName = "Generated";
 
         string viewModelSuffix = "ViewModel";
@@ -22,6 +25,7 @@ namespace Maui.CodeGeneratorHelpers
 
         IEnumerable<string> executionLocations = Array.Empty<string>();
 
+        public static GenerationBuilder WithNewInstance() => new();
 
         /// <summary>
         /// Possible project paths generator could be executed from
@@ -79,24 +83,55 @@ namespace Maui.CodeGeneratorHelpers
             return this;
         }
 
-        public Task GenerateAsync()
+        public async Task GenerateAsync()
         {
+
             if (mobileProjectName is null)
                 throw new ArgumentNullException(nameof(mobileProjectName), "Specify mobile project using WithMobileProjectName()");
             var locations = new HashSet<string>(executionLocations)
             {
                 mobileAppLocation
             };
-            string rootPath = Directory.GetCurrentDirectory().ToFullRootPath(locations);
-            string fullMobilePath = rootPath.Combine(mobileAppLocation);
+
+            //string rootPath = Directory.GetCurrentDirectory().ToFullPath(locations);
+            string fullMobilePath = mobileAppLocation.ToFullPath(locations);
             string fullPagePath = fullMobilePath.Combine(pagesPath);
             string fullViewModelPath = fullMobilePath.Combine(viewModelPath);
-            string generationPath = fullViewModelPath.Combine(generatedFolderName);
+            string generationPath = fullMobilePath.Combine(generatedFolderName);
+            generationPath.RecreateFolder();
 
+            var pageNames = fullPagePath.GetNamesWithEnding($"{pageSuffix}.xaml");
+            var viewModelNames = fullViewModelPath.GetNamesWithEnding($"{viewModelSuffix}.cs");
 
+            var injections = CodeUtils.GenerateTransientInjections(
+                                                pageNames.Union(viewModelNames));
 
+            var methods = new List<string>();
+            methods.Add(CodeUtils.GenerateInjectionMethod(injections));
 
-            return Task.CompletedTask;
+            var usings = new[]
+            {
+                $"{mobileProjectName}.{pagesPath}",
+                $"{mobileProjectName}.{viewModelPath}",
+            };
+
+            string utilCode = CodeUtils.GenerateUtilClass($"{mobileProjectName}.{generatedFolderName}", 
+                                                          methods,
+                                                          usings);
+            string genFilePath = generationPath.Combine("GenerationUtils.g.cs");
+
+            foreach (var pageName in pageNames)
+            {
+                var viewModelName = viewModelNames.SingleOrDefault(v => v == $"{pageName[..^pageSuffix.Length]}{viewModelSuffix}");
+                if (viewModelName is not null)
+                {
+                    var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}", usings, pageName, viewModelName);
+                    await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.cs"), pageCode);
+                }
+            }
+
+            await File.WriteAllTextAsync(genFilePath, utilCode);
+
         }
 
     }
