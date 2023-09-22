@@ -32,21 +32,12 @@ public partial class {pageName} {{
 
     private {viewModelName} viewModel = null;
 
-    public {viewModelName} ViewModel
-    {{
-        get
-        {{
-            if (viewModel is null)
-            {{
-                viewModel = Shell.Current.Handler.MauiContext.Services.GetService<{viewModelName}>();
-                BindingContext = viewModel;
-            }}
-            return viewModel;
-        }}
-    }}
+    public {viewModelName} ViewModel => viewModel ??= Shell.Current.Handler.MauiContext.Services.GetService<{viewModelName}>();
+   
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {{
+        BindingContext = ViewModel;
         await ViewModel.OnNavigatedToAsync(args);
         OnNavigatedToInternal(args);
         base.OnNavigatedTo(args);
