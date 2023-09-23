@@ -1,4 +1,6 @@
-﻿using Maui.CodeGeneratorHelpers.Internal;
+﻿using CodeGeneratorHelpers.Maui.Internal;
+using CodeGeneratorHelpers.Maui.Models;
+using Maui.CodeGeneratorHelpers.Internal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,6 +25,8 @@ namespace Maui.CodeGeneratorHelpers
         string mobileAppLocation = null;
         string mobileProjectName = null;
 
+        readonly ICollection<PageEventData> _pageEventDatas = new List<PageEventData>();
+
         IEnumerable<string> executionLocations = Array.Empty<string>();
 
         public static CodeGenerationBuilder WithNewInstance() => new();
@@ -35,6 +39,12 @@ namespace Maui.CodeGeneratorHelpers
         public CodeGenerationBuilder WithExecutionLocations(params string[] locations)
         {
             executionLocations = locations;
+            return this;
+        }
+
+        public CodeGenerationBuilder AddPageToViewModelEvent(PageEventType type, string functionName, bool isAwaitable = false)
+        {
+            _pageEventDatas.Add(new(type, functionName, isAwaitable));
             return this;
         }
 
@@ -125,7 +135,11 @@ namespace Maui.CodeGeneratorHelpers
                 var viewModelName = viewModelNames.SingleOrDefault(v => v == $"{pageName[..^pageSuffix.Length]}{viewModelSuffix}");
                 if (viewModelName is not null)
                 {
-                    var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}", usings, pageName, viewModelName);
+                    var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}",
+                                                                 usings,
+                                                                 pageName,
+                                                                 viewModelName,
+                                                                 _pageEventDatas);
                     await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.g.cs"), pageCode);
                 }
             }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CodeGeneratorHelpers.Maui.Internal;
+using CodeGeneratorHelpers.Maui.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

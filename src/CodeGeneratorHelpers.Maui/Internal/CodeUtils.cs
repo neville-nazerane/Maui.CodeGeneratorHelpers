@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CodeGeneratorHelpers.Maui.Internal;
+using CodeGeneratorHelpers.Maui.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,56 +11,141 @@ namespace Maui.CodeGeneratorHelpers.Internal
     internal class CodeUtils
     {
 
-        public static IEnumerable<string> GenerateTransientInjections(IEnumerable<string> classNames)
+        internal static IEnumerable<string> GenerateTransientInjections(IEnumerable<string> classNames)
             => classNames.Select(c => $".AddTransient<{c}>()")
                          .ToArray();
 
-        public static string GenerateInjectionMethod(IEnumerable<string> injections)
+        internal static string GenerateInjectionMethod(IEnumerable<string> injections)
             => $@"
     public static IServiceCollection AddGeneratedInjections(this IServiceCollection services)
         => services{string.Join("\n                   ", injections)};
 ".Trim();
 
-        public static string GeneratePartialPage(string @namespace,
+        internal static string GeneratePartialPage(string @namespace,
                                                  IEnumerable<string> usings,
                                                  string pageName,
-                                                 string viewModelName)
+                                                 string viewModelName,
+                                                 IEnumerable<PageEventData> _events)
             => @$"
 {PrintUsings(usings)}
 
 namespace {@namespace};
 
 public partial class {pageName} {{
-
+    
     private {viewModelName} viewModel = null;
 
     public {viewModelName} ViewModel
     {{
         get
         {{
-            if (viewModel is null)
-            {{
-                viewModel = Shell.Current.Handler.MauiContext.Services.GetService<{viewModelName}>();
-                BindingContext = viewModel;
-            }}
+            SetupViewModelIfNotAlready();
             return viewModel;
         }}
     }}
 
-    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    private void SetupViewModelIfNotAlready()
     {{
-        await ViewModel.OnNavigatedToAsync();
-        OnNavigatedToInternal(args);
-        base.OnNavigatedTo(args);
+        if (viewModel is null)
+        {{
+            viewModel = Shell.Current.Handler.MauiContext.Services.GetService<{viewModelName}>();
+            BindingContext = viewModel;
+        }}
     }}
 
-    protected virtual void OnNavigatedToInternal(NavigatedToEventArgs args) {{ }}
+    protected override void OnAppearing()
+    {{
+        SetupViewModelIfNotAlready();
+        {PrintEventCall(_events, PageEventType.OnAppearing)}
+        OnAppearingInternal();
+        base.OnAppearing();
+    }}
+
+    partial void OnAppearingInternal();
+    
+    protected override bool OnBackButtonPressed()
+    {{
+        {PrintEventCall(_events, PageEventType.OnBackButtonPressed)}
+        OnBackButtonPressedInternal();
+        return base.OnBackButtonPressed();
+    }}
+
+    partial void OnBackButtonPressedInternal();
+
+    protected override void OnBindingContextChanged()
+    {{
+        {PrintEventCall(_events, PageEventType.OnBindingContextChanged)}
+        OnBindingContextChangedInternal();
+        base.OnBindingContextChanged();
+    }}
+
+    partial void OnBindingContextChangedInternal();
+
+    protected virtual void OnChildMeasureInvalidated(object sender, EventArgs e)
+    {{
+        {PrintEventCall(_events, PageEventType.OnChildMeasureInvalidated)}
+        OnChildMeasureInvalidatedInternal(sender, e);
+    }}
+
+    partial void OnChildMeasureInvalidatedInternal(object sender, EventArgs e);
+
+    protected override void OnDisappearing()
+    {{
+        {PrintEventCall(_events, PageEventType.OnDisappearing)}
+        OnDisappearingInternal();
+        base.OnDisappearing();
+    }}
+
+    partial void OnDisappearingInternal();
+
+    protected virtual void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
+    {{
+        {PrintEventCall(_events, PageEventType.OnNavigatedFrom)}
+        OnNavigatedFromInternal(args);
+    }}
+
+    partial void OnNavigatedFromInternal(Microsoft.Maui.Controls.NavigatedFromEventArgs args);
+
+    protected virtual void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
+    {{
+        {PrintEventCall(_events, PageEventType.OnNavigatedTo)}
+        OnNavigatedToInternal(args);
+    }}
+
+    partial void OnNavigatedToInternal(Microsoft.Maui.Controls.NavigatedToEventArgs args);
+
+    protected virtual void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
+    {{
+        {PrintEventCall(_events, PageEventType.OnNavigatingFrom)}
+        OnNavigatingFromInternal(args);
+    }}
+
+    partial void OnNavigatingFromInternal(Microsoft.Maui.Controls.NavigatingFromEventArgs args);
+
+    protected override void OnParentSet()
+    {{
+        {PrintEventCall(_events, PageEventType.OnParentSet)}
+        OnParentSetInternal();
+        base.OnParentSet();
+    }}
+
+    partial void OnParentSetInternal();
+
+    protected override void OnSizeAllocated(double width, double height)
+    {{
+        {PrintEventCall(_events, PageEventType.OnSizeAllocated)}
+        OnSizeAllocatedInternal(width, height);
+        base.OnSizeAllocated(width, height);
+    }}
+
+    partial void OnSizeAllocatedInternal(double width, double height);
+
 
 }}
     
 ".Trim();
 
-        public static string GenerateUtilClass(string @namespace,
+        internal static string GenerateUtilClass(string @namespace,
                                                 IEnumerable<string> methods,
                                                 IEnumerable<string> usings)
             => $@"
@@ -74,6 +161,18 @@ public static class GenerationUtils
 }}
 
 ".Trim();
+
+        private static string PrintEventCall(IEnumerable<PageEventData> _events,
+                                             PageEventType eventType)
+        {
+            var methods = _events.Where(e => e.Type == eventType).ToArray();
+
+            var lines = methods
+                            .Select(m => $"{(m.IsAwaitable ? "await" : string.Empty)} {m.FunctionName}();")
+                            .ToArray();
+
+            return string.Join('\n', lines);
+        }
 
         private static string PrintUsings(IEnumerable<string> usings)
         {
