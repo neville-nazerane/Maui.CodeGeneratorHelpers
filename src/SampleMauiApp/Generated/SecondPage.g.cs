@@ -3,7 +3,8 @@ using SampleMauiApp.ViewModels;
 
 namespace SampleMauiApp.Pages;
 
-public partial class SecondPage {
+public partial class SecondPage 
+{
     
     private SecondViewModel viewModel = null;
 
@@ -25,92 +26,32 @@ public partial class SecondPage {
         }
     }
 
+
+    protected override async void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
+    {
+        await ViewModel.OnNavigatedToAsync();
+
+        base.OnNavigatedTo(args);
+    }
+
+
+    protected override async void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
+    {
+        await ViewModel.OnNavigatedFromAsync();
+
+        base.OnNavigatedFrom(args);
+    }
+
+
     protected override void OnAppearing()
     {
         SetupViewModelIfNotAlready();
-        
         OnAppearingInternal();
+
         base.OnAppearing();
     }
 
     partial void OnAppearingInternal();
-    
-    protected override bool OnBackButtonPressed()
-    {
-        
-        OnBackButtonPressedInternal();
-        return base.OnBackButtonPressed();
-    }
-
-    partial void OnBackButtonPressedInternal();
-
-    protected override void OnBindingContextChanged()
-    {
-        
-        OnBindingContextChangedInternal();
-        base.OnBindingContextChanged();
-    }
-
-    partial void OnBindingContextChangedInternal();
-
-    protected void OnChildMeasureInvalidated(object sender, EventArgs e)
-    {
-        
-        OnChildMeasureInvalidatedInternal(sender, e);
-    }
-
-    partial void OnChildMeasureInvalidatedInternal(object sender, EventArgs e);
-
-    protected override void OnDisappearing()
-    {
-        
-        OnDisappearingInternal();
-        base.OnDisappearing();
-    }
-
-    partial void OnDisappearingInternal();
-
-    protected void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
-    {
-        
-        OnNavigatedFromInternal(args);
-    }
-
-    partial void OnNavigatedFromInternal(Microsoft.Maui.Controls.NavigatedFromEventArgs args);
-
-    protected void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
-    {
-        
-        OnNavigatedToInternal(args);
-    }
-
-    partial void OnNavigatedToInternal(Microsoft.Maui.Controls.NavigatedToEventArgs args);
-
-    protected void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
-    {
-        
-        OnNavigatingFromInternal(args);
-    }
-
-    partial void OnNavigatingFromInternal(Microsoft.Maui.Controls.NavigatingFromEventArgs args);
-
-    protected override void OnParentSet()
-    {
-        
-        OnParentSetInternal();
-        base.OnParentSet();
-    }
-
-    partial void OnParentSetInternal();
-
-    protected override void OnSizeAllocated(double width, double height)
-    {
-        
-        OnSizeAllocatedInternal(width, height);
-        base.OnSizeAllocated(width, height);
-    }
-
-    partial void OnSizeAllocatedInternal(double width, double height);
 
 
 }

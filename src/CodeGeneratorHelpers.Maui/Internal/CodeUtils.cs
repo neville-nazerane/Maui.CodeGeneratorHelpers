@@ -25,13 +25,22 @@ namespace Maui.CodeGeneratorHelpers.Internal
                                                  IEnumerable<string> usings,
                                                  string pageName,
                                                  string viewModelName,
-                                                 IEnumerable<PageEventData> _events)
-            => @$"
+                                                 IEnumerable<PageEventData> events)
+        {
+
+            var eventsGrouped = events.GroupBy(e => e.Type).ToList();
+            var methods = eventsGrouped.Select(g => PrintEventMethod(g, g.Key)).ToList();
+
+            if (!eventsGrouped.Any(e => e.Key == PageEventType.OnAppearing))
+                methods.Add(PrintEventMethod(Array.Empty<PageEventData>(), PageEventType.OnAppearing));
+
+            return @$"
 {PrintUsings(usings)}
 
 namespace {@namespace};
 
-public partial class {pageName} {{
+public partial class {pageName} 
+{{
     
     private {viewModelName} viewModel = null;
 
@@ -53,97 +62,14 @@ public partial class {pageName} {{
         }}
     }}
 
-    protected override void OnAppearing()
-    {{
-        SetupViewModelIfNotAlready();
-        {PrintEventCall(_events, PageEventType.OnAppearing)}
-        OnAppearingInternal();
-        base.OnAppearing();
-    }}
-
-    partial void OnAppearingInternal();
-    
-    protected override bool OnBackButtonPressed()
-    {{
-        {PrintEventCall(_events, PageEventType.OnBackButtonPressed)}
-        OnBackButtonPressedInternal();
-        return base.OnBackButtonPressed();
-    }}
-
-    partial void OnBackButtonPressedInternal();
-
-    protected override void OnBindingContextChanged()
-    {{
-        {PrintEventCall(_events, PageEventType.OnBindingContextChanged)}
-        OnBindingContextChangedInternal();
-        base.OnBindingContextChanged();
-    }}
-
-    partial void OnBindingContextChangedInternal();
-
-    protected void OnChildMeasureInvalidated(object sender, EventArgs e)
-    {{
-        {PrintEventCall(_events, PageEventType.OnChildMeasureInvalidated)}
-        OnChildMeasureInvalidatedInternal(sender, e);
-    }}
-
-    partial void OnChildMeasureInvalidatedInternal(object sender, EventArgs e);
-
-    protected override void OnDisappearing()
-    {{
-        {PrintEventCall(_events, PageEventType.OnDisappearing)}
-        OnDisappearingInternal();
-        base.OnDisappearing();
-    }}
-
-    partial void OnDisappearingInternal();
-
-    protected void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
-    {{
-        {PrintEventCall(_events, PageEventType.OnNavigatedFrom)}
-        OnNavigatedFromInternal(args);
-    }}
-
-    partial void OnNavigatedFromInternal(Microsoft.Maui.Controls.NavigatedFromEventArgs args);
-
-    protected void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
-    {{
-        {PrintEventCall(_events, PageEventType.OnNavigatedTo)}
-        OnNavigatedToInternal(args);
-    }}
-
-    partial void OnNavigatedToInternal(Microsoft.Maui.Controls.NavigatedToEventArgs args);
-
-    protected void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
-    {{
-        {PrintEventCall(_events, PageEventType.OnNavigatingFrom)}
-        OnNavigatingFromInternal(args);
-    }}
-
-    partial void OnNavigatingFromInternal(Microsoft.Maui.Controls.NavigatingFromEventArgs args);
-
-    protected override void OnParentSet()
-    {{
-        {PrintEventCall(_events, PageEventType.OnParentSet)}
-        OnParentSetInternal();
-        base.OnParentSet();
-    }}
-
-    partial void OnParentSetInternal();
-
-    protected override void OnSizeAllocated(double width, double height)
-    {{
-        {PrintEventCall(_events, PageEventType.OnSizeAllocated)}
-        OnSizeAllocatedInternal(width, height);
-        base.OnSizeAllocated(width, height);
-    }}
-
-    partial void OnSizeAllocatedInternal(double width, double height);
-
+{string.Join('\n', methods)}
 
 }}
-    
+
+
 ".Trim();
+
+        }
 
         internal static string GenerateUtilClass(string @namespace,
                                                 IEnumerable<string> methods,
@@ -162,133 +88,138 @@ public static class GenerationUtils
 
 ".Trim();
 
-        private static string PrintEventMethod(IEnumerable<PageEventData> _events,
+        private static string PrintEventLines(IEnumerable<PageEventData> methods, PageEventType eventType)
+        {
+            var builder = new StringBuilder();
+
+            switch (eventType)
+            {
+                case PageEventType.OnBackButtonPressed:
+                    {
+                        for (int i = 0; i < methods.Count(); i++)
+                        {
+                            var m = methods.ElementAt(i);
+                            builder.AppendLine($"        var res{i + 1} = {(m.IsAwaitable ? "await" : string.Empty)} ViewModel.{m.FunctionName}();");
+                            builder.AppendLine($"        if (!res{i + 1}) return false;");
+                        }
+
+                        break;
+                    }
+
+                case PageEventType.OnSizeAllocated:
+                    {
+                        foreach (var m in methods)
+                            builder.AppendLine($"        {(m.IsAwaitable ? "await" : string.Empty)} ViewModel.{m.FunctionName}(width, height);");
+                        break;
+                    }
+                default:
+                    {
+                        foreach (var m in methods)
+                            builder.AppendLine($"        {(m.IsAwaitable ? "await" : string.Empty)} ViewModel.{m.FunctionName}();");
+                        break;
+                    }
+            }
+            return builder.ToString();
+        }
+
+        private static string PrintEventMethod(IEnumerable<PageEventData> events,
                                                PageEventType eventType)
         {
-            var methods = _events.Where(e => e.Type == eventType).ToArray();
+            var methods = events.Where(e => e.Type == eventType).ToArray();
 
-            var lines = methods
-                            .Select(m => $"{(m.IsAwaitable ? "await" : string.Empty)} {m.FunctionName}();")
-                            .ToArray();
+            var methodContent = PrintEventLines(methods, eventType);
 
-            if (!lines.Any() && eventType != PageEventType.OnAppearing) return null;
+            if (!methods.Any() && eventType != PageEventType.OnAppearing) return null;
 
-            var methodContent = string.Join('\n', lines);
             return eventType switch
             {
                 PageEventType.OnAppearing => $@"
-protected override void OnAppearing()
-{{
-    SetupViewModelIfNotAlready();
-    {(!lines.Any() ? "OnAppearingInternal();" : null)}
-    {methodContent}
-    base.OnAppearing();
-}}
+    protected override {methods.AsyncIfHasAsync()}void OnAppearing()
+    {{
+        SetupViewModelIfNotAlready();
+        {(!methods.Any() ? "OnAppearingInternal();" : null)}
+{methodContent}
+        base.OnAppearing();
+    }}
 
-{(!lines.Any() ? "partial void OnAppearingInternal();" : null)}
-".Trim(),
-
+    {(!methods.Any() ? "partial void OnAppearingInternal();" : null)}
+",
 
 
                 PageEventType.OnBackButtonPressed => $@"
-protected override bool OnBackButtonPressed()
-{{
-    {methodContent}
-    return base.OnBackButtonPressed();
-}}
-".Trim(),
-
-
+    protected override {methods.AsyncIfHasAsync()}bool OnBackButtonPressed()
+    {{
+{methodContent}
+        return base.OnBackButtonPressed();
+    }}
+",
 
                 PageEventType.OnBindingContextChanged => $@"
-protected override void OnBindingContextChanged()
-{{
-    {methodContent}
-    base.OnBindingContextChanged();
-}}
-".Trim(),
-
-
+    protected override {methods.AsyncIfHasAsync()}void OnBindingContextChanged()
+    {{
+{methodContent}
+        base.OnBindingContextChanged();
+    }}
+",
 
                 PageEventType.OnChildMeasureInvalidated => $@"
-protected virtual void OnChildMeasureInvalidated(object sender, EventArgs e)
-{{
-    {methodContent}
-    base.OnChildMeasureInvalidated(sender, e);
-}}
-".Trim(),
-
-
+    protected override {methods.AsyncIfHasAsync()}void OnChildMeasureInvalidated(object sender, EventArgs e)
+    {{
+{methodContent}
+        base.OnChildMeasureInvalidated(sender, e);
+    }}
+",
 
                 PageEventType.OnDisappearing => $@"
-protected override void OnDisappearing()
-{{
-    {methodContent}
-    base.OnDisappearing();
-}}
-".Trim(),
-
-
+    protected override {methods.AsyncIfHasAsync()}void OnDisappearing()
+    {{
+{methodContent}
+        base.OnDisappearing();
+    }}
+",
 
                 PageEventType.OnNavigatedFrom => $@"
-protected virtual void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
-{{
-    {methodContent}
-    base.OnNavigatedFrom(args);
-}}
-".Trim(),
+    protected override {methods.AsyncIfHasAsync()}void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
+    {{
+{methodContent}
+        base.OnNavigatedFrom(args);
+    }}
+",
+
                 PageEventType.OnNavigatedTo => $@"
-protected virtual void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
-{{
-    {methodContent}
-    base.OnNavigatedTo(args);
-}}
-".Trim(),
-
-
+    protected override {methods.AsyncIfHasAsync()}void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
+    {{
+{methodContent}
+        base.OnNavigatedTo(args);
+    }}
+",
 
                 PageEventType.OnNavigatingFrom => $@"
-protected virtual void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
-{{
-    {methodContent}
-    base.OnNavigatingFrom(args);
-}}
-".Trim(),
-
-
+    protected override {methods.AsyncIfHasAsync()}void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
+    {{
+{methodContent}
+        base.OnNavigatingFrom(args);
+    }}
+",
 
                 PageEventType.OnParentSet => $@"
-protected override void OnParentSet()
-{{
-    {methodContent}
-    base.OnParentSet();
-}}
-".Trim(),
-
-
+    protected override {methods.AsyncIfHasAsync()}void OnParentSet()
+    {{
+{methodContent}
+        base.OnParentSet();
+    }}
+",
 
                 PageEventType.OnSizeAllocated => $@"
-protected override void OnSizeAllocated(double width, double height)
-{{
-    {methodContent}
-    base.OnSizeAllocated(width, height);
-}}
-".Trim(),
+    protected override {methods.AsyncIfHasAsync()}void OnSizeAllocated(double width, double height)
+    {{
+{methodContent}
+        base.OnSizeAllocated(width, height);
+    }}
+",
                 _ => null,
             };
         }
-
-        //private static string PrintEventCall(IEnumerable<PageEventData> _events,
-        //                                     PageEventType eventType)
-        //{
-        //    var methods = _events.Where(e => e.Type == eventType).ToArray();
-
-        //    var lines = methods
-        //                    .Select(m => $"{(m.IsAwaitable ? "await" : string.Empty)} {m.FunctionName}();")
-        //                    .ToArray();
-
-        //    return string.Join('\n', lines);
-        //}
 
         private static string PrintUsings(IEnumerable<string> usings)
         {
