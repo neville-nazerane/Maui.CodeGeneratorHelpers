@@ -5,7 +5,7 @@ namespace SampleMauiApp.Pages;
 
 public partial class SecondPage 
 {
-
+    
     private SecondViewModel viewModel = null;
 
     public SecondViewModel ViewModel
@@ -16,7 +16,7 @@ public partial class SecondPage
             return viewModel;
         }
     }
-   
+
     private void SetupViewModelIfNotAlready()
     {
         if (viewModel is null)
