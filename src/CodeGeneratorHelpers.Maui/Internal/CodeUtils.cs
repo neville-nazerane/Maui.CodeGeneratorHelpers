@@ -81,7 +81,7 @@ public partial class {pageName} {{
 
     partial void OnBindingContextChangedInternal();
 
-    protected virtual void OnChildMeasureInvalidated(object sender, EventArgs e)
+    protected void OnChildMeasureInvalidated(object sender, EventArgs e)
     {{
         {PrintEventCall(_events, PageEventType.OnChildMeasureInvalidated)}
         OnChildMeasureInvalidatedInternal(sender, e);
@@ -98,7 +98,7 @@ public partial class {pageName} {{
 
     partial void OnDisappearingInternal();
 
-    protected virtual void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
+    protected void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
     {{
         {PrintEventCall(_events, PageEventType.OnNavigatedFrom)}
         OnNavigatedFromInternal(args);
@@ -106,7 +106,7 @@ public partial class {pageName} {{
 
     partial void OnNavigatedFromInternal(Microsoft.Maui.Controls.NavigatedFromEventArgs args);
 
-    protected virtual void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
+    protected void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
     {{
         {PrintEventCall(_events, PageEventType.OnNavigatedTo)}
         OnNavigatedToInternal(args);
@@ -114,7 +114,7 @@ public partial class {pageName} {{
 
     partial void OnNavigatedToInternal(Microsoft.Maui.Controls.NavigatedToEventArgs args);
 
-    protected virtual void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
+    protected void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
     {{
         {PrintEventCall(_events, PageEventType.OnNavigatingFrom)}
         OnNavigatingFromInternal(args);
@@ -162,8 +162,8 @@ public static class GenerationUtils
 
 ".Trim();
 
-        private static string PrintEventCall(IEnumerable<PageEventData> _events,
-                                             PageEventType eventType)
+        private static string PrintEventMethod(IEnumerable<PageEventData> _events,
+                                               PageEventType eventType)
         {
             var methods = _events.Where(e => e.Type == eventType).ToArray();
 
@@ -171,8 +171,124 @@ public static class GenerationUtils
                             .Select(m => $"{(m.IsAwaitable ? "await" : string.Empty)} {m.FunctionName}();")
                             .ToArray();
 
-            return string.Join('\n', lines);
+            if (!lines.Any() && eventType != PageEventType.OnAppearing) return null;
+
+            var methodContent = string.Join('\n', lines);
+            return eventType switch
+            {
+                PageEventType.OnAppearing => $@"
+protected override void OnAppearing()
+{{
+    SetupViewModelIfNotAlready();
+    {(!lines.Any() ? "OnAppearingInternal();" : null)}
+    {methodContent}
+    base.OnAppearing();
+}}
+
+{(!lines.Any() ? "partial void OnAppearingInternal();" : null)}
+".Trim(),
+
+
+
+                PageEventType.OnBackButtonPressed => $@"
+protected override bool OnBackButtonPressed()
+{{
+    {methodContent}
+    return base.OnBackButtonPressed();
+}}
+".Trim(),
+
+
+
+                PageEventType.OnBindingContextChanged => $@"
+protected override void OnBindingContextChanged()
+{{
+    {methodContent}
+    base.OnBindingContextChanged();
+}}
+".Trim(),
+
+
+
+                PageEventType.OnChildMeasureInvalidated => $@"
+protected virtual void OnChildMeasureInvalidated(object sender, EventArgs e)
+{{
+    {methodContent}
+    base.OnChildMeasureInvalidated(sender, e);
+}}
+".Trim(),
+
+
+
+                PageEventType.OnDisappearing => $@"
+protected override void OnDisappearing()
+{{
+    {methodContent}
+    base.OnDisappearing();
+}}
+".Trim(),
+
+
+
+                PageEventType.OnNavigatedFrom => $@"
+protected virtual void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
+{{
+    {methodContent}
+    base.OnNavigatedFrom(args);
+}}
+".Trim(),
+                PageEventType.OnNavigatedTo => $@"
+protected virtual void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
+{{
+    {methodContent}
+    base.OnNavigatedTo(args);
+}}
+".Trim(),
+
+
+
+                PageEventType.OnNavigatingFrom => $@"
+protected virtual void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
+{{
+    {methodContent}
+    base.OnNavigatingFrom(args);
+}}
+".Trim(),
+
+
+
+                PageEventType.OnParentSet => $@"
+protected override void OnParentSet()
+{{
+    {methodContent}
+    base.OnParentSet();
+}}
+".Trim(),
+
+
+
+                PageEventType.OnSizeAllocated => $@"
+protected override void OnSizeAllocated(double width, double height)
+{{
+    {methodContent}
+    base.OnSizeAllocated(width, height);
+}}
+".Trim(),
+                _ => null,
+            };
         }
+
+        //private static string PrintEventCall(IEnumerable<PageEventData> _events,
+        //                                     PageEventType eventType)
+        //{
+        //    var methods = _events.Where(e => e.Type == eventType).ToArray();
+
+        //    var lines = methods
+        //                    .Select(m => $"{(m.IsAwaitable ? "await" : string.Empty)} {m.FunctionName}();")
+        //                    .ToArray();
+
+        //    return string.Join('\n', lines);
+        //}
 
         private static string PrintUsings(IEnumerable<string> usings)
         {

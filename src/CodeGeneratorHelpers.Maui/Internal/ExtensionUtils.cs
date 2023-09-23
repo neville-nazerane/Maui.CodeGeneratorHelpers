@@ -41,6 +41,9 @@ namespace Maui.CodeGeneratorHelpers.Internal
             return info.Name[..^info.Extension.Length];
         }
 
+        internal static bool HasAsyncs(this IEnumerable<PageEventData> datas)
+            => datas.Any(d => d.IsAwaitable);
+        
         //internal static string TrimPage(this string pageName)
         //{
         //    if (pageName.EndsWith("Page"))
