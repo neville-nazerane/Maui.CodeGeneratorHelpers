@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Maui.CodeGeneratorHelpers
 {
-    public class GenerationBuilder
+    public class CodeGenerationBuilder
     {
 
         string viewModelPath = "ViewModels";
@@ -25,27 +25,27 @@ namespace Maui.CodeGeneratorHelpers
 
         IEnumerable<string> executionLocations = Array.Empty<string>();
 
-        public static GenerationBuilder WithNewInstance() => new();
+        public static CodeGenerationBuilder WithNewInstance() => new();
 
         /// <summary>
         /// Possible project paths generator could be executed from
         /// </summary>
         /// <param name="locations"></param>
         /// <returns></returns>
-        public GenerationBuilder WithExecutionLocations(params string[] locations)
+        public CodeGenerationBuilder WithExecutionLocations(params string[] locations)
         {
             executionLocations = locations;
             return this;
         }
 
-        public GenerationBuilder WithGeneratedFolderName(string folderName)
+        public CodeGenerationBuilder WithGeneratedFolderName(string folderName)
         {
             generatedFolderName = folderName;
             return this;
         }
 
 
-        public GenerationBuilder WithMobileProjectName(string name)
+        public CodeGenerationBuilder WithMobileProjectName(string name)
         {
             mobileProjectName = name;
             mobileAppLocation ??= name;
@@ -53,31 +53,31 @@ namespace Maui.CodeGeneratorHelpers
         }
 
 
-        public GenerationBuilder WithViewModelPath(string path)
+        public CodeGenerationBuilder WithViewModelPath(string path)
         {
             viewModelPath = path;
             return this;
         }
 
-        public GenerationBuilder WithPagesPath(string path)
+        public CodeGenerationBuilder WithPagesPath(string path)
         {
             pagesPath = path;
             return this;
         }
 
-        public GenerationBuilder WithViewModelSuffix(string suffix)
+        public CodeGenerationBuilder WithViewModelSuffix(string suffix)
         {
             viewModelSuffix = suffix;
             return this;
         }
 
-        public GenerationBuilder WithPageSuffix(string suffix)
+        public CodeGenerationBuilder WithPageSuffix(string suffix)
         {
             pageSuffix = suffix;
             return this;
         }
 
-        public GenerationBuilder WithMobileAppLocation(string location)
+        public CodeGenerationBuilder WithMobileAppLocation(string location)
         {
             mobileAppLocation = location;
             return this;
@@ -126,7 +126,7 @@ namespace Maui.CodeGeneratorHelpers
                 if (viewModelName is not null)
                 {
                     var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}", usings, pageName, viewModelName);
-                    await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.cs"), pageCode);
+                    await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.g.cs"), pageCode);
                 }
             }
 

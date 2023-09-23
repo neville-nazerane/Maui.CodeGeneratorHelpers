@@ -9,5 +9,4 @@ public partial class FirstPage : ContentPage
 		InitializeComponent();
 	}
 
-
 }

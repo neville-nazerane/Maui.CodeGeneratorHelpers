@@ -22,7 +22,7 @@ public partial class SecondPage {
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
-        await ViewModel.OnNavigatedToAsync(args);
+        await ViewModel.OnNavigatedToAsync();
         OnNavigatedToInternal(args);
         base.OnNavigatedTo(args);
     }

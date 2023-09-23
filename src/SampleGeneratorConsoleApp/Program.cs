@@ -4,7 +4,7 @@
 
 
 
-await GenerationBuilder.WithNewInstance()
+await CodeGenerationBuilder.WithNewInstance()
                        .WithMobileProjectName("SampleMauiApp")
                        .WithExecutionLocations("SampleGeneratorConsoleApp")
                        .GenerateAsync();

@@ -1,3 +1,4 @@
+using Android.Telephony;
 using SampleMauiApp.Pages;
 using SampleMauiApp.ViewModels;
 
@@ -11,22 +12,36 @@ public partial class FirstPage {
     {
         get
         {
-            if (viewModel is null)
-            {
-                viewModel = Shell.Current.Handler.MauiContext.Services.GetService<FirstViewModel>();
-                BindingContext = viewModel;
-            }
+            SetupViewModelIfNotAlready();
             return viewModel;
         }
     }
 
-    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    private void SetupViewModelIfNotAlready()
     {
-        await ViewModel.OnNavigatedToAsync(args);
-        OnNavigatedToInternal(args);
-        base.OnNavigatedTo(args);
+        if (viewModel is null)
+        {
+            viewModel = Shell.Current.Handler.MauiContext.Services.GetService<FirstViewModel>();
+            BindingContext = viewModel;
+        }
     }
 
-    protected virtual void OnNavigatedToInternal(NavigatedToEventArgs args) { }
+    protected override void OnAppearing()
+    {
+        SetupViewModelIfNotAlready();
+        OnAppearingInternal();
+        base.OnAppearing();
+    }
+
+    partial void OnAppearingInternal();
+
+    //protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    //{
+    //    await ViewModel.OnNavigatedToAsync();
+    //    OnNavigatedToInternal(args);
+    //    base.OnNavigatedTo(args);
+    //}
+
+    //protected virtual void OnNavigatedToInternal(NavigatedToEventArgs args) { }
 
 }
