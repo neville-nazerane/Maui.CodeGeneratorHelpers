@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CodeGeneratorHelpers.Maui.Internal;
+using CodeGeneratorHelpers.Maui.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -39,6 +41,9 @@ namespace Maui.CodeGeneratorHelpers.Internal
             return info.Name[..^info.Extension.Length];
         }
 
+        internal static string AsyncIfHasAsync(this IEnumerable<PageEventData> datas)
+            => datas.Any(d => d.IsAwaitable) ? "async " : null;
+        
         //internal static string TrimPage(this string pageName)
         //{
         //    if (pageName.EndsWith("Page"))

@@ -4,6 +4,8 @@
     {
         int count = 0;
 
+        object Stuff => Shell.Current?.Handler?.MauiContext?.Services;
+
         public MainPage()
         {
             InitializeComponent();
@@ -20,5 +22,36 @@
 
             SemanticScreenReader.Announce(CounterBtn.Text);
         }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+        }
+
+        protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+        {
+            base.OnNavigatedFrom(args);
+        }
+
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
+        {
+            base.OnNavigatedTo(args);
+        }
+
+        protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
+        {
+            base.OnNavigatingFrom(args);
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            return base.OnBackButtonPressed();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+        }
+
     }
 }

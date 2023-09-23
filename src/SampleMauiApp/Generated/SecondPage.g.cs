@@ -3,21 +3,55 @@ using SampleMauiApp.ViewModels;
 
 namespace SampleMauiApp.Pages;
 
-public partial class SecondPage {
-
+public partial class SecondPage 
+{
+    
     private SecondViewModel viewModel = null;
 
-    public SecondViewModel ViewModel => viewModel ??= Shell.Current.Handler.MauiContext.Services.GetService<SecondViewModel>();
-   
-
-    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    public SecondViewModel ViewModel
     {
-        BindingContext = ViewModel;
-        await ViewModel.OnNavigatedToAsync(args);
-        OnNavigatedToInternal(args);
+        get
+        {
+            SetupViewModelIfNotAlready();
+            return viewModel;
+        }
+    }
+
+    private void SetupViewModelIfNotAlready()
+    {
+        if (viewModel is null)
+        {
+            viewModel = Shell.Current.Handler.MauiContext.Services.GetService<SecondViewModel>();
+            BindingContext = viewModel;
+        }
+    }
+
+
+    protected override async void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
+    {
+        await ViewModel.OnNavigatedToAsync();
+
         base.OnNavigatedTo(args);
     }
 
-    protected virtual void OnNavigatedToInternal(NavigatedToEventArgs args) { }
+
+    protected override async void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
+    {
+        await ViewModel.OnNavigatedFromAsync();
+
+        base.OnNavigatedFrom(args);
+    }
+
+
+    protected override void OnAppearing()
+    {
+        SetupViewModelIfNotAlready();
+        OnAppearingInternal();
+
+        base.OnAppearing();
+    }
+
+    partial void OnAppearingInternal();
+
 
 }

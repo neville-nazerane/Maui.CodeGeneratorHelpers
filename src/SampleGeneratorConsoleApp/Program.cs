@@ -1,10 +1,15 @@
-﻿using Maui.CodeGeneratorHelpers;
+﻿using CodeGeneratorHelpers.Maui.Models;
+using Maui.CodeGeneratorHelpers;
 
 
 
 
 
-await GenerationBuilder.WithNewInstance()
-                       .WithMobileProjectName("SampleMauiApp")
-                       .WithExecutionLocations("SampleGeneratorConsoleApp")
-                       .GenerateAsync();
+await CodeGenerationBuilder.WithNewInstance()
+                           .WithMobileProjectName("SampleMauiApp")
+                           .WithExecutionLocations("SampleGeneratorConsoleApp")
+
+                           .AddPageToViewModelEvent(PageEventType.OnNavigatedTo, "OnNavigatedToAsync", true)
+                           .AddPageToViewModelEvent(PageEventType.OnNavigatedFrom, "OnNavigatedFromAsync", true)
+
+                           .GenerateAsync();

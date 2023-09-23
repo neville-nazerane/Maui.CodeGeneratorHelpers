@@ -11,14 +11,13 @@ trigger:
 
 
 variables:
-  minorVersion: 1
   majorVersion: 0
+  minorVersion: 5
 
 parameters:
   - name: projectNames
     type: object
     default:
-      # - CodeGenerator.Maui.Core
       - CodeGeneratorHelpers.Maui
   
 

@@ -1,4 +1,6 @@
-﻿using Maui.CodeGeneratorHelpers.Internal;
+﻿using CodeGeneratorHelpers.Maui.Internal;
+using CodeGeneratorHelpers.Maui.Models;
+using Maui.CodeGeneratorHelpers.Internal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Maui.CodeGeneratorHelpers
 {
-    public class GenerationBuilder
+    public class CodeGenerationBuilder
     {
 
         string viewModelPath = "ViewModels";
@@ -23,29 +25,37 @@ namespace Maui.CodeGeneratorHelpers
         string mobileAppLocation = null;
         string mobileProjectName = null;
 
+        readonly ICollection<PageEventData> _pageEventDatas = new List<PageEventData>();
+
         IEnumerable<string> executionLocations = Array.Empty<string>();
 
-        public static GenerationBuilder WithNewInstance() => new();
+        public static CodeGenerationBuilder WithNewInstance() => new();
 
         /// <summary>
         /// Possible project paths generator could be executed from
         /// </summary>
         /// <param name="locations"></param>
         /// <returns></returns>
-        public GenerationBuilder WithExecutionLocations(params string[] locations)
+        public CodeGenerationBuilder WithExecutionLocations(params string[] locations)
         {
             executionLocations = locations;
             return this;
         }
 
-        public GenerationBuilder WithGeneratedFolderName(string folderName)
+        public CodeGenerationBuilder AddPageToViewModelEvent(PageEventType type, string functionName, bool isAwaitable = false)
+        {
+            _pageEventDatas.Add(new(type, functionName, isAwaitable));
+            return this;
+        }
+
+        public CodeGenerationBuilder WithGeneratedFolderName(string folderName)
         {
             generatedFolderName = folderName;
             return this;
         }
 
 
-        public GenerationBuilder WithMobileProjectName(string name)
+        public CodeGenerationBuilder WithMobileProjectName(string name)
         {
             mobileProjectName = name;
             mobileAppLocation ??= name;
@@ -53,31 +63,31 @@ namespace Maui.CodeGeneratorHelpers
         }
 
 
-        public GenerationBuilder WithViewModelPath(string path)
+        public CodeGenerationBuilder WithViewModelPath(string path)
         {
             viewModelPath = path;
             return this;
         }
 
-        public GenerationBuilder WithPagesPath(string path)
+        public CodeGenerationBuilder WithPagesPath(string path)
         {
             pagesPath = path;
             return this;
         }
 
-        public GenerationBuilder WithViewModelSuffix(string suffix)
+        public CodeGenerationBuilder WithViewModelSuffix(string suffix)
         {
             viewModelSuffix = suffix;
             return this;
         }
 
-        public GenerationBuilder WithPageSuffix(string suffix)
+        public CodeGenerationBuilder WithPageSuffix(string suffix)
         {
             pageSuffix = suffix;
             return this;
         }
 
-        public GenerationBuilder WithMobileAppLocation(string location)
+        public CodeGenerationBuilder WithMobileAppLocation(string location)
         {
             mobileAppLocation = location;
             return this;
@@ -125,7 +135,11 @@ namespace Maui.CodeGeneratorHelpers
                 var viewModelName = viewModelNames.SingleOrDefault(v => v == $"{pageName[..^pageSuffix.Length]}{viewModelSuffix}");
                 if (viewModelName is not null)
                 {
-                    var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}", usings, pageName, viewModelName);
+                    var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}",
+                                                                 usings,
+                                                                 pageName,
+                                                                 viewModelName,
+                                                                 _pageEventDatas);
                     await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.g.cs"), pageCode);
                 }
             }
