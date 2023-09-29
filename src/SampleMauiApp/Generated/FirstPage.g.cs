@@ -29,18 +29,24 @@ public partial class FirstPage
 
     protected override async void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
     {
+        OnNavigatedToInternal();
         await ViewModel.OnNavigatedToAsync();
 
         base.OnNavigatedTo(args);
     }
 
+    partial void OnNavigatedToInternal();
+
 
     protected override async void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
     {
+        OnNavigatedFromInternal();
         await ViewModel.OnNavigatedFromAsync();
 
         base.OnNavigatedFrom(args);
     }
+
+    partial void OnNavigatedFromInternal();
 
 
     protected override void OnAppearing()
