@@ -137,86 +137,112 @@ public static class GenerationUtils
     protected override {methods.AsyncIfHasAsync()}void OnAppearing()
     {{
         SetupViewModelIfNotAlready();
-        {(!methods.Any() ? "OnAppearingInternal();" : null)}
+        OnAppearingInternal();
 {methodContent}
         base.OnAppearing();
     }}
 
-    {(!methods.Any() ? "partial void OnAppearingInternal();" : null)}
+    partial void OnAppearingInternal();
 ",
-
-
                 PageEventType.OnBackButtonPressed => $@"
     protected override {methods.AsyncIfHasAsync()}bool OnBackButtonPressed()
     {{
+        OnBackButtonPressedInternal();
 {methodContent}
         return base.OnBackButtonPressed();
     }}
+
+    partial void OnBackButtonPressedInternal();
 ",
 
                 PageEventType.OnBindingContextChanged => $@"
     protected override {methods.AsyncIfHasAsync()}void OnBindingContextChanged()
     {{
+        OnBindingContextChangedInternal();
 {methodContent}
         base.OnBindingContextChanged();
     }}
+
+    partial void OnBindingContextChangedInternal();
 ",
 
                 PageEventType.OnChildMeasureInvalidated => $@"
     protected override {methods.AsyncIfHasAsync()}void OnChildMeasureInvalidated(object sender, EventArgs e)
     {{
+        OnChildMeasureInvalidatedInternal();
 {methodContent}
         base.OnChildMeasureInvalidated(sender, e);
     }}
+
+    partial void OnChildMeasureInvalidatedInternal();
 ",
 
                 PageEventType.OnDisappearing => $@"
     protected override {methods.AsyncIfHasAsync()}void OnDisappearing()
     {{
+        OnDisappearingInternal();
 {methodContent}
         base.OnDisappearing();
     }}
+
+    partial void OnDisappearingInternal();
 ",
 
                 PageEventType.OnNavigatedFrom => $@"
     protected override {methods.AsyncIfHasAsync()}void OnNavigatedFrom(Microsoft.Maui.Controls.NavigatedFromEventArgs args)
     {{
+        OnNavigatedFromInternal();
 {methodContent}
         base.OnNavigatedFrom(args);
     }}
+
+    partial void OnNavigatedFromInternal();
 ",
 
                 PageEventType.OnNavigatedTo => $@"
     protected override {methods.AsyncIfHasAsync()}void OnNavigatedTo(Microsoft.Maui.Controls.NavigatedToEventArgs args)
     {{
+        OnNavigatedToInternal();
 {methodContent}
         base.OnNavigatedTo(args);
     }}
+
+    partial void OnNavigatedToInternal();
 ",
 
                 PageEventType.OnNavigatingFrom => $@"
     protected override {methods.AsyncIfHasAsync()}void OnNavigatingFrom(Microsoft.Maui.Controls.NavigatingFromEventArgs args)
     {{
+        OnNavigatingFromInternal();
 {methodContent}
         base.OnNavigatingFrom(args);
     }}
+
+    partial void OnNavigatingFromInternal();
 ",
 
                 PageEventType.OnParentSet => $@"
     protected override {methods.AsyncIfHasAsync()}void OnParentSet()
     {{
+        OnParentSetInternal();
 {methodContent}
         base.OnParentSet();
     }}
+
+    partial void OnParentSetInternal();
 ",
 
                 PageEventType.OnSizeAllocated => $@"
     protected override {methods.AsyncIfHasAsync()}void OnSizeAllocated(double width, double height)
     {{
+        OnSizeAllocatedInternal();
 {methodContent}
         base.OnSizeAllocated(width, height);
     }}
+
+    partial void OnSizeAllocatedInternal();
 ",
+
                 _ => null,
             };
         }
