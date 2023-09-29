@@ -2,15 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SampleMauiApp.ViewModels"
-             x:Class="SampleMauiApp.Pages.FirstPage"
-             x:DataType="vm:FirstViewModel"
-             Title="FirstPage">
+             x:Class="SampleMauiApp.Pages.ParamsPage"
+             x:DataType="vm:ParamsViewModel"
+             Title="ParamsPage">
     <VerticalStackLayout>
-        
-        <Entry Text="{Binding Name}" />
-
-        <Button Text="Go To Params Test" 
-                Command="{Binding ToParamsCommand}" />
-        
+        <Label 
+            Text="{Binding Name}"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
     </VerticalStackLayout>
 </ContentPage>

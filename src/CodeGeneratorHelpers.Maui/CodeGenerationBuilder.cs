@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Maui.CodeGeneratorHelpers
@@ -130,15 +131,31 @@ namespace Maui.CodeGeneratorHelpers
                                                           usings);
             string genFilePath = generationPath.Combine("GenerationUtils.g.cs");
 
+            Regex parameterRegex = new(@"\[ForQueryParameter\((nameof\()?\""?(\w+)\""?\)?, \""?(\w+)\""?\)\]");
+
             foreach (var pageName in pageNames)
             {
+                var queryParameter = new Dictionary<string, string>();
                 var viewModelName = viewModelNames.SingleOrDefault(v => v == $"{pageName[..^pageSuffix.Length]}{viewModelSuffix}");
                 if (viewModelName is not null)
                 {
+                    var viewModelFileName = fullViewModelPath.Combine($"{viewModelName}.cs");
+                    await foreach (var line in viewModelFileName.ReadFileLinesAsync())
+                    {
+                        Match match = parameterRegex.Match(line.Trim());
+                        if (match.Success)
+                        {
+                            string property = match.Groups[2].Value;
+                            string parameter = match.Groups[3].Value;
+                            queryParameter[property] = parameter;
+                        }
+                    }
+
                     var pageCode = CodeUtils.GeneratePartialPage($"{mobileProjectName}.{pagesPath}",
                                                                  usings,
                                                                  pageName,
                                                                  viewModelName,
+                                                                 queryParameter,
                                                                  _pageEventDatas);
                     await File.WriteAllTextAsync(generationPath.Combine($"{pageName}.g.cs"), pageCode);
                 }

@@ -3,13 +3,13 @@ using SampleMauiApp.ViewModels;
 
 namespace SampleMauiApp.Pages;
 
-
-public partial class SecondPage 
+[QueryProperty("Name", "name")]
+public partial class ParamsPage 
 {
     
-    private SecondViewModel viewModel = null;
+    private ParamsViewModel viewModel = null;
 
-    public SecondViewModel ViewModel
+    public ParamsViewModel ViewModel
     {
         get
         {
@@ -22,7 +22,7 @@ public partial class SecondPage
     {
         if (viewModel is null)
         {
-            viewModel = Shell.Current.Handler.MauiContext.Services.GetService<SecondViewModel>();
+            viewModel = Shell.Current.Handler.MauiContext.Services.GetService<ParamsViewModel>();
             BindingContext = viewModel;
         }
     }

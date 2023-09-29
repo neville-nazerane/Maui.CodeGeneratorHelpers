@@ -22,4 +22,9 @@
         ContentTemplate="{DataTemplate page:SecondPage}"
         Route="second" />
 
+    <ShellContent
+        Title="Parmed"
+        ContentTemplate="{DataTemplate page:ParamsPage}"
+        Route="params" />
+
 </Shell>

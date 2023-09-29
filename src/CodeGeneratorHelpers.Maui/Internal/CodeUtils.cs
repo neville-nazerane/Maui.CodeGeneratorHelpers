@@ -25,6 +25,7 @@ namespace Maui.CodeGeneratorHelpers.Internal
                                                  IEnumerable<string> usings,
                                                  string pageName,
                                                  string viewModelName,
+                                                 Dictionary<string, string> queryParameter,
                                                  IEnumerable<PageEventData> events)
         {
 
@@ -34,11 +35,14 @@ namespace Maui.CodeGeneratorHelpers.Internal
             if (!eventsGrouped.Any(e => e.Key == PageEventType.OnAppearing))
                 methods.Add(PrintEventMethod(Array.Empty<PageEventData>(), PageEventType.OnAppearing));
 
+            var attrs = queryParameter.Select(p => $"[QueryProperty(\"{p.Key}\", \"{p.Value}\")]");
+
             return @$"
 {PrintUsings(usings)}
 
 namespace {@namespace};
 
+{string.Join("\n", attrs)}
 public partial class {pageName} 
 {{
     

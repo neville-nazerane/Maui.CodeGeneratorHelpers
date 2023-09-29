@@ -1,5 +1,6 @@
 ﻿using CodeGeneratorHelpers.Maui.Internal;
 using CodeGeneratorHelpers.Maui.Models;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,7 +44,14 @@ namespace Maui.CodeGeneratorHelpers.Internal
 
         internal static string AsyncIfHasAsync(this IEnumerable<PageEventData> datas)
             => datas.Any(d => d.IsAwaitable) ? "async " : null;
-        
+
+        internal static async IAsyncEnumerable<string> ReadFileLinesAsync(this string fileName)
+        {
+            using StreamReader reader = new(fileName);
+            string line;
+            while ((line = await reader.ReadLineAsync()) != null)
+                yield return line;
+        }
         //internal static string TrimPage(this string pageName)
         //{
         //    if (pageName.EndsWith("Page"))
